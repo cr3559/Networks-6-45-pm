@@ -14,15 +14,12 @@ public class Client1
 	
 	
 	
-//	public void main (String[] args) throws IOException, InterruptedException
-//	{
-//		new Client1().setupClient();
-//	}
-	
-	public void main (String [] args)
+	public static void main (String[] args) throws IOException, InterruptedException
 	{
-		System.out.println("hi");
+	new Client1().setupClient();
 	}
+	
+
 	
     public  void setupClient() throws IOException, InterruptedException
     {	
@@ -37,24 +34,9 @@ public class Client1
         	for( int i = 0;  i< 50; i++)
         	{
         		System.out.println("Message Number: " + (i + 1));
-        		clientSocket = new Socket("192.168.1.7", 4446); 
+        		clientSocket = new Socket("192.168.1.7", 4446); //adjust IP here
         		String outgoingMessage = null;
-        		
-        	
-	    		// Setup a socket that will try to connect to a specific address(usually an IPv4 address)
-	    		// and port number.
-        		
-        	
-        		
-	            // First the client sets up its send connection
-	            //Need this
-	            
-	            //Scanner to read message from  server
-//	            Scanner in = new Scanner(clientSocket.getInputStream());
-	            
-	           
-        		
-        
+ 
 	            if( (i + 1) % 5 == 0)
 	            {
 	            	sabotagedMessage = true;
@@ -67,15 +49,13 @@ public class Client1
 	            outgoingMessage = buildMessage(randomMessages.get(i), sabotagedMessage)+ ""+(char)255; // delimitingCharacter
 	          
 	            //Sends user input to the server
-	            
-	            Thread thread = new Thread(new ClientListener(serverSocket.accept()));
-	            thread.start();
-	            
 	            Thread clientSend = new Thread(new ClientSender(clientSocket, outgoingMessage));
 	            clientSend.start();
-	      
-	            
-	            Thread.sleep(2000);
+	          
+	            Thread thread = new Thread(new ClientListener(serverSocket.accept()));
+	            thread.start();
+	
+	            Thread.sleep(1000);
         	}
         	
         	clientSocket.close();
@@ -91,7 +71,7 @@ public class Client1
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    	}
+    }
 
     
     
@@ -150,12 +130,5 @@ public class Client1
 		return destinationAsChar;
 		
 	}
-
-
-	
-    
-    
-    
-    
-    
+ 
 }

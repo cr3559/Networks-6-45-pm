@@ -15,73 +15,69 @@ public class ClientListener  implements Runnable
 	}
 
 
-		public  void run()
+	public  void run()
+	{
+		try 
 		{
-			try 
-			{
-				Scanner scanner = new Scanner(socket.getInputStream());
-				char delimiterChar = (char) 255;
-				String stringDelimiter = new StringBuilder().append(delimiterChar).toString();
-				
-				scanner = scanner.useDelimiter(stringDelimiter);
+			Scanner scanner = new Scanner(socket.getInputStream());
+			char delimiterChar = (char) 255;
+			String stringDelimiter = new StringBuilder().append(delimiterChar).toString();
+			
+			scanner = scanner.useDelimiter(stringDelimiter);
 
-				//while(true)// Added this while loop to get C code to run
-				{
-					if(scanner.hasNext())
-					{
-						String message = scanner.next();
-						
-						if(verifyCheckSum(message))
-						{
-							System.out.println("Checksum Verified: Data Intact\n");
-						}
-					}
-					else
-					{
-						System.out.println("Unable to verify checksum: Data Corrupt\n");
-						
-					} 
-					this.socket.close();
-				}
-				
-			}
-			catch (IOException e) 
+			//while(true)// Added this while loop to get C code to run
 			{
-				e.printStackTrace();
+				if(scanner.hasNext())
+				{
+					String message = scanner.next();
+					
+					if(verifyCheckSum(message))
+					{
+						System.out.println("Checksum Verified: Data Intact\n");
+						this.socket.close();
+					}
+				}
+				else
+				{
+					System.out.println("Unable to verify checksum: Data Corrupt\n");
+					
+				} 
+				this.socket.close();
 			}
 			
 		}
-		
-		
-		
-	
-		
-	
-		public boolean verifyCheckSum(String incomingMessage)
+		catch (IOException e) 
 		{
-			char source = incomingMessage.charAt(0);
-			char destination = incomingMessage.charAt(1);
-			int checkSum = incomingMessage.charAt(2);
-			String data = incomingMessage.substring(3, 10);
-			System.out.println("data: " + data);
-			int actualSum = Integer.parseInt(data, 2);
-			
-			System.out.println("Checksum: " + checkSum);
-			System.out.println("binary checksum: " + actualSum) ;
-			
-			System.out.println("Incoming Destination: " + destination);
-			System.out.println("Incoming Data: " + data);
+			e.printStackTrace();
+		}
+		
+	}
 
-			if(checkSum == actualSum)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+	public boolean verifyCheckSum(String incomingMessage)
+	{
+		char source = incomingMessage.charAt(0);
+		char destination = incomingMessage.charAt(1);
+		int checkSum = incomingMessage.charAt(2);
+		String data = incomingMessage.substring(3, 10);
+		System.out.println("data: " + data);
+		int actualSum = Integer.parseInt(data, 2);
 		
+		System.out.println("Checksum: " + checkSum);
+		System.out.println("binary checksum: " + actualSum) ;
+		
+		System.out.println("Incoming Destination: " + destination);
+		System.out.println("Incoming Data: " + data);
+
+		if(checkSum == actualSum)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	
 	}
 		
-	}
+}
 

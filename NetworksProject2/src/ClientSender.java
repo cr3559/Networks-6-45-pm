@@ -13,24 +13,12 @@ public class ClientSender implements Runnable
 	String outgoingMessage;
 	ArrayList<String> randomMessages = new ArrayList<String>();
 	boolean sabotagedMessage;
-	
-	
-	
-	
-	
-	
-	
+
 	public ClientSender(Socket clientSocket, String outgoingMessage) 
 	{
 		this.clientSocket = clientSocket;
 		this.outgoingMessage = outgoingMessage;
 	}
-
-
-
-
-
-
 
 	@Override
 	public void run() 
@@ -40,6 +28,7 @@ public class ClientSender implements Runnable
 			out = new DataOutputStream(this.clientSocket.getOutputStream());
 			out.flush();
             out.writeBytes(outgoingMessage);
+            clientSocket.close();
 
 		} 
 		catch (IOException e) 
