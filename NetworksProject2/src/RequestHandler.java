@@ -57,6 +57,7 @@ String routerTable;
 					//The next location to send the message
 					String destination = findDestination(message);
 					
+					
 					//The socket used to send the message
 					Socket destinationSocket = new Socket(destination, 7771 );
 					
@@ -118,7 +119,7 @@ String routerTable;
 		 */
 		for(DataHolder dataHolder: list)
 		{
-			if(dataHolder.source.equals(source) && dataHolder.destination.equals(destination))
+			if(dataHolder.source.charAt(0) == source && dataHolder.destination.charAt(0) == destination)
 			{
 				DataHolder destinationData = dataHolder;
 				
