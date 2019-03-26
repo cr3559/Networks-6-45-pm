@@ -6,11 +6,23 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Client1 implements Runnable
+public class Client1 
 {
 	static Socket clientSocket;
 	static ArrayList<String> randomMessages = new ArrayList<String>();
 	static boolean sabotagedMessage;
+	
+	
+	
+//	public void main (String[] args) throws IOException, InterruptedException
+//	{
+//		new Client1().setupClient();
+//	}
+	
+	public void main (String [] args)
+	{
+		System.out.println("hi");
+	}
 	
     public  void setupClient() throws IOException, InterruptedException
     {	
@@ -20,11 +32,12 @@ public class Client1 implements Runnable
         try
         {
 
+        
         	ServerSocket serverSocket = new ServerSocket(7771);
         	for( int i = 0;  i< 50; i++)
         	{
         		System.out.println("Message Number: " + (i + 1));
-        		clientSocket = new Socket("127.0.0.1", 4446); 
+        		clientSocket = new Socket("192.168.1.7", 4446); 
         		String outgoingMessage = null;
         		
         	
@@ -34,13 +47,14 @@ public class Client1 implements Runnable
         	
         		
 	            // First the client sets up its send connection
-	            DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream()); //USE PrintWriter out = new PrintWriter<clientSocket.getOutputStream(),true);(FROM GIRARD);
-	            out.flush(); //Need this
+	            //Need this
 	            
 	            //Scanner to read message from  server
-	            Scanner in = new Scanner(clientSocket.getInputStream());
+//	            Scanner in = new Scanner(clientSocket.getInputStream());
 	            
 	           
+        		
+        
 	            if( (i + 1) % 5 == 0)
 	            {
 	            	sabotagedMessage = true;
@@ -53,15 +67,15 @@ public class Client1 implements Runnable
 	            outgoingMessage = buildMessage(randomMessages.get(i), sabotagedMessage)+ ""+(char)255; // delimitingCharacter
 	          
 	            //Sends user input to the server
-	            out.writeBytes(outgoingMessage);
-	            
-	          
 	            
 	            Thread thread = new Thread(new ClientListener(serverSocket.accept()));
 	            thread.start();
-	           
 	            
-	            Thread.sleep(1000);
+	            Thread clientSend = new Thread(new ClientSender(clientSocket, outgoingMessage));
+	            clientSend.start();
+	      
+	            
+	            Thread.sleep(2000);
         	}
         	
         	clientSocket.close();
@@ -81,7 +95,7 @@ public class Client1 implements Runnable
 
     
     
-	public static void populateRandomMessages()
+	public void populateRandomMessages()
 	{
 		for(int i = 0; i < 50; i++)
 		{
@@ -101,7 +115,7 @@ public class Client1 implements Runnable
 			
 	}
 	
-	public static String buildMessage(String input, boolean sabotaged)
+	public String buildMessage(String input, boolean sabotaged)
 	{
 		char source = '1';
 		char destination = randomDestination();
@@ -127,7 +141,7 @@ public class Client1 implements Runnable
 		return result;
 	}
 	
-	public static char randomDestination()
+	public char randomDestination()
 	{
 		int asciiMax = 52;
 		int asciiMin = 49;
@@ -137,28 +151,8 @@ public class Client1 implements Runnable
 		
 	}
 
-	@Override
-	public void run() 
-	{
-		try 
-		{
-			setupClient();
-		} 
-		catch (IOException | InterruptedException e) 
-		{
-			e.printStackTrace();
-		}
-		
-	}
+
 	
-    public static void main (String[] args) throws IOException, InterruptedException
-    {
-//    	Thread clientThread = new Thread(new Client1());
-//    	clientThread.start();
-    	
-    	new Client1().setupClient();
-    	
-    }
     
     
     
