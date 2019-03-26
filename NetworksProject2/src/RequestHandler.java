@@ -33,19 +33,12 @@ String routerTable;
 			Scanner scanner = new Scanner(socket.getInputStream());
 			char delimiterChar = (char) 255;
 			String stringDelimiter = new StringBuilder().append(delimiterChar).toString();
-			
 			scanner = scanner.useDelimiter(stringDelimiter);
-			
-			
-//			while(true)// Added this while loop to get C code to run
-//			{
+
 				if(scanner.hasNext())
 				{
-					
 					String message = "";
-					
-					
-						message = message + scanner.next();
+					message = message + scanner.next();
 					
 					if(verifyCheckSum(message))
 					{
@@ -62,27 +55,20 @@ String routerTable;
 					output.flush();
 					destinationSocket.close();
 					}
-					
-					
-					
+			
 					else 
 					{
 						System.out.println("Data Corrupted, message discarded.\n");
 						destinationSocket.close();
 					}
 				}
-			
-		
-			
-//			} 
+
 		}
 		catch (IOException e) 
 		{
 			e.printStackTrace();
 		}
-		
-		
-		
+
 	}
 	
 	public String findDestination(String message) throws FileNotFoundException
@@ -101,185 +87,7 @@ String routerTable;
 		}
 		return null;
 	}
-//		
-//		if(source == '1')
-//		{
-//			switch(destination)
-//			{
-//				case '2':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("1") && dataHolder.destination.equals("2"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//				case '3':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("1") && dataHolder.destination.equals("3"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//				case '4':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("1") && dataHolder.destination.equals("4"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//				case '1':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("1") && dataHolder.destination.equals("1"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//					
-//			}
-//					
-//		}
-//		
-//		else if(source == '2')
-//		{
-//			switch(destination)
-//			{
-//				case '1':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("2") && dataHolder.destination.equals("1"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//				case '2':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("2") && dataHolder.destination.equals("2"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//				case '3':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("2") && dataHolder.destination.equals("3"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//				case '4':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("2") && dataHolder.destination.equals("4"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//					
-//			}
-//		}
-//		else if(source == '3')
-//		{
-//			switch(destination)
-//			{
-//				case '1':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("3") && dataHolder.destination.equals("1"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//				case '2':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("3") && dataHolder.destination.equals("2"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//				case '3':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("3") && dataHolder.destination.equals("3"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//				case '4':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("3") && dataHolder.destination.equals("4"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//			
-//		
-//			}
-//		}
-//		else if(source == '4')
-//		{
-//			switch(destination)
-//			{
-//				case '1':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("4") && dataHolder.destination.equals("1"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//				case '2':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("4") && dataHolder.destination.equals("2"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//				case '3':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("4") && dataHolder.destination.equals("3"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//				case '4':
-//					for(DataHolder dataHolder: list)
-//					{
-//						if(dataHolder.source.equals("4") && dataHolder.destination.equals("4"))
-//						{
-//							DataHolder destinationData = dataHolder;
-//							return destinationData.address;
-//						}
-//					}
-//			}
-//		}
-//		return message;
-//	}
-//	
-	
+
 	public boolean verifyCheckSum(String message)
 	{
 		int checkSum = message.charAt(2);
@@ -296,6 +104,7 @@ String routerTable;
 		
 			return true;
 		}
+		
 		else
 		{
 			return false;
