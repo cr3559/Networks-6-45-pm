@@ -27,6 +27,8 @@ public class Client1 extends GenericClient
         	for( int i = 0;  i< randomMessages.size(); i++)
         	{
         		System.out.println("Message Number: " + (i + 1));
+        		
+        		//String to hold the message
         		String outgoingMessage = null;
  
         		//Checksum of every 5th message is purposely corrupted
@@ -63,7 +65,7 @@ public class Client1 extends GenericClient
         }
         
         //Bad IP address
-        catch (UnknownHostException e) //bad address
+        catch (UnknownHostException e) 
         {
             e.printStackTrace();
         }
