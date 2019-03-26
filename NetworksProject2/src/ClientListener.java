@@ -81,7 +81,6 @@ public class ClientListener  implements Runnable
 		
 		//The binary string of the incoming data
 		String data = incomingMessage.substring(3, 10);
-		System.out.println("data: " + data);
 		
 		//The binary string in decimal form
 		int actualSum = Integer.parseInt(data, 2);

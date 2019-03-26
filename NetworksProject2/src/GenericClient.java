@@ -73,9 +73,7 @@ public abstract class GenericClient
 		
 		//The ascii value coresponding to a specified int
 		char checkSumAsChar;
-		
-		System.out.println("Checksum as int: " + checkSum);
-		
+			
 		//Purposely corrupts the checksum if the message is flagged as sabotaged
 		if(!sabotaged)
 		{
@@ -92,7 +90,6 @@ public abstract class GenericClient
 		//The message to be sent to the Server
 		String result = new StringBuilder().append(source).append(destination).append(checkSumAsChar).toString() + data;
 		
-		System.out.println("New implementaion: " + result);
 		return result;
 	}
 	
