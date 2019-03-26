@@ -1,40 +1,46 @@
 import java.io.IOException;
 import java.net.ServerSocket;
-
+/**
+ * @author Christopher Roadcap
+ * 
+ * A router that receives incoming messages and determines, 
+ * where to send them based on the message contents and by 
+ * referencing a routing table. Verifies the message has not been 
+ * corrupted via a checksum.
+ */
 public class Router2 
 {
+	//Socket for receiving incoming messages
 	ServerSocket serverSocket;
 	
+	/**
+	 * Creates a server socket to listen for incoming messages. When a message is received,
+	 * A thread is made to determine where the message should be sent next, and then sends the message
+	 * @throws InterruptedException
+	 */
     public void setupServer() throws InterruptedException
     {    	  
         try
-        {
-            
-            serverSocket = new ServerSocket(4446); 	// 4446 is the port number the server will listen to
-						   							// only one application can listen to a port at a time
+        {	//Listening for incoming messages on port 4446
+            serverSocket = new ServerSocket(4446); 	
         }
         catch (IOException e)
         {
-            
             e.printStackTrace();
         }
 
         try
         {
-
-        	//Socket contains all of the info about the connection
+        	//Continuously listens for new incoming messages
         	while(true)
         	{
-        		// Have the server listen and accept if someone tries to connect.
-        		//Blocking call - it will sit and wait here until a Client tries to connect.
-        		//Creates a new thread for each socket accept
-        		Thread thread =  new Thread(new RequestHandler(serverSocket.accept(), "router_1_table.txt"));
-        		//Thread.sleep(1000);
+        		//Creates a new thread for each socket accept, thread determines destination and sends the message
+        		Thread thread =  new Thread(new RequestHandler(serverSocket.accept(), "router_2_table.txt"));
         		synchronized(this)
         		{
+        			//starts the thread
         			thread.start();
         		}
-            
         	}
         }
         catch (IOException e)
@@ -46,11 +52,8 @@ public class Router2
     
 	public static void main(String[] args) throws InterruptedException 
 	{
-		Router1 server = new Router1();
+		Router2 server = new Router2();
 		server.setupServer();
-		
-
-
 	}
 
 }

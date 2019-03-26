@@ -54,8 +54,6 @@ public class Router1
 	{
 		Router1 server = new Router1();
 		server.setupServer();
-		
-
 
 	}
 

@@ -1,42 +1,45 @@
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Scanner;
-
-public class Client2 
+/**
+ * @author Christopher Roadcap
+ * A client that sends outgoing messages, as well as receives incoming messages.
+ * received messages are verified to ensure valid data via a checksum
+ */
+public class Client2 extends GenericClient
 {
-	static Socket clientSocket;
-	static ArrayList<String> randomMessages = new ArrayList<String>();
-	static boolean sabotagedMessage;
+	//Socket for outgoing messages
+	static Socket clientSocket;	
 	
+	//Holds randomly generated messages
+	static ArrayList<String> randomMessages = new ArrayList<String>(); 
 	
-	
-	public static void main (String[] args) throws IOException, InterruptedException
-	{
-		new Client2().setupClient();
-	}
-	
-
-	
+	//Used to determine if the checksum for the message will be purposely corrupted
+	static boolean sabotagedMessage; 
+	/**
+	 * Populates messages containing a random destination, and a random binary string.
+	 * Then creates a thread to send the message, and a thread to receive incoming messages.
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
     public  void setupClient() throws IOException, InterruptedException
     {	
     	populateRandomMessages();
-    	
-    
         try
         {
-
-        
+        	//Socket that listens for incoming messages
         	ServerSocket serverSocket = new ServerSocket(7771);
-        	for( int i = 0;  i< 50; i++)
+        	
+        	for( int i = 0;  i< randomMessages.size(); i++)
         	{
         		System.out.println("Message Number: " + (i + 1));
-        		clientSocket = new Socket("192.168.1.7", 4446); //adjust IP here
+        		
+        		//String to hold the message
         		String outgoingMessage = null;
  
+        		//Checksum of every 5th message is purposely corrupted
 	            if( (i + 1) % 5 == 0)
 	            {
 	            	sabotagedMessage = true;
@@ -46,88 +49,44 @@ public class Client2
 	            	sabotagedMessage = false;
 	            }
 	            
-	            outgoingMessage = buildMessage(randomMessages.get(i), sabotagedMessage)+ ""+(char)255; // delimitingCharacter
+	            //The message to be sent 
+	            outgoingMessage = buildMessage('1',randomMessages.get(i), sabotagedMessage)+ ""+(char)255; // char(255) used as delimiter
+	            
+	            //socket created to this client's router (will change based on where we are running)
+	            clientSocket = new Socket("192.168.1.7", 4446); 
 	          
-	            //Sends user input to the server
+	            //Create thread to send message and start the thread
 	            Thread clientSend = new Thread(new ClientSender(clientSocket, outgoingMessage));
 	            clientSend.start();
-	          
+	            
+	            //Create thread to accept incoming messages and start the thread
 	            Thread thread = new Thread(new ClientListener(serverSocket.accept()));
 	            thread.start();
-	
-	            Thread.sleep(1000);
+	            
+	            //Sleep so one message is sent every 2 seconds
+	            Thread.sleep(2000);
         	}
         	
+        	//After all messages have been sent, close the socket
         	clientSocket.close();
 
         }
-        catch (UnknownHostException e) //bad address
+        
+        //Bad IP address
+        catch (UnknownHostException e) 
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        catch (IOException e)	//error when setting up connection
+        
+        //failed or interrupted I/O
+        catch (IOException e)	
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
-
     
-    
-	public void populateRandomMessages()
-	{
-		for(int i = 0; i < 50; i++)
-		{
-			int max = 127;
-			int min = 0 ;
-			int randomData = (int) (Math.random() * ((max - min) + 1)) + min;
-			String padding = "";
-			
-			String binary = Integer.toBinaryString(randomData);
-			for(int j= 0; j < 7 - binary.length(); j++)
-			{
-				padding += "0";
-			}
-			binary = padding + binary;
-			randomMessages.add(binary);
-		}
-			
-	}
-	
-	public String buildMessage(String input, boolean sabotaged)
-	{
-		char source = '1';
-		char destination = randomDestination();
-		String data = input;
-		int checkSum =Integer.parseInt(data,2);
-		char checkSumAsChar;
-		System.out.println("Checksum as int: " + checkSum);
-		if(!sabotaged)
-		{
-			checkSumAsChar = (char)(checkSum);
-		}
-		else
-		{
-			checkSumAsChar = (char)(checkSum +30);
-		}
-		
-		System.out.println("Outgoing Destination: " + destination);
-		System.out.println("Outgoing Data: " + data);
-		
-		String result = new StringBuilder().append(source).append(destination).append(checkSumAsChar).toString() + data;
-		
-		System.out.println("New implementaion: " + result);
-		return result;
-	}
-	
-	public char randomDestination()
-	{
-		int asciiMax = 52;
-		int asciiMin = 49;
-		int destination = (int) (Math.random() * ((asciiMax - asciiMin) + 1)) + asciiMin;
-		char destinationAsChar = (char)destination;
-		return destinationAsChar;
-		
-	}
+    public static void main (String[] args) throws IOException, InterruptedException
+    {
+    	new Client2().setupClient();
+    }
 }
