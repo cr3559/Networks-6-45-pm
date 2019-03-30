@@ -40,27 +40,26 @@ public class ClientListener  implements Runnable
 			
 			//Setting the delimiter
 			scanner = scanner.useDelimiter(stringDelimiter);
-			{
-				if(scanner.hasNext())
-				{
-					//Message that is received
-					String message = scanner.next();
-					
-					//Determines if the checksum is valid
-					if(verifyCheckSum(message))
-					{
-						System.out.println("Checksum Verified: Data Intact\n");
-						this.socket.close();
-					}
-				}
-				else
-				{
-					System.out.println("Unable to verify checksum: Data Corrupt\n");
-					this.socket.close();
-				} 
-			}
 			
-		}
+			if(scanner.hasNext())
+			{
+				//Message that is received
+				String message = scanner.next();
+				
+				//Determines if the checksum is valid
+				if(verifyCheckSum(message))
+				{
+					System.out.println("Checksum Verified: Data Intact\n");
+					this.socket.close();
+				}
+			}
+			else
+			{
+				System.out.println("Unable to verify checksum: Data Corrupt\n");
+				this.socket.close();
+			} 
+			
+			}
 		}
 		catch (IOException e) 
 		{
@@ -96,13 +95,15 @@ public class ClientListener  implements Runnable
 		System.out.println("Incoming Destination: " + destination);
 		System.out.println("Incoming Checksum: " + checkSum);		
 		System.out.println("Incoming Data: " + data);
-
+		
 		if(checkSum == actualSum)
-		{
+		{	
+			//valid checksum
 			return true;
 		}
 		else
 		{
+			//invalid checksum
 			return false;
 		}
 	

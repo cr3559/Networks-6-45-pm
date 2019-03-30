@@ -1,3 +1,4 @@
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,12 +15,10 @@ public class ThreadSender implements Runnable
 	@Override
 	public void run() 
 	{
+		//populates random message array list
 		populateRandomMessages(randomMessages);
         try
         {
-        	//Socket that listens for incoming messages
-        	//serverSocket = new ServerSocket(7771);
-        	
         	for( int i = 0;  i< randomMessages.size(); i++)
         	{
         		System.out.println("Message Number: " + (i + 1));
@@ -42,22 +41,32 @@ public class ThreadSender implements Runnable
 	            
 	            //socket created to this client's router (will change based on where we are running)
 	            clientSocket = new Socket("127.0.0.1", 4446); 
-	          
-	            //Create thread to send message and start the thread
-	            Thread clientSend = new Thread(new ClientSender(clientSocket, outgoingMessage));
-	            clientSend.start();
-	            clientSend.join();
-	            Thread.sleep(2000);
 	            
-	            
-        
-	            
+	            //The output stream to write to
+	    		DataOutputStream out;
+	    		try 
+	    		{
+	    			//assign the output stream to the sockets output stream
+	    			out = new DataOutputStream(this.clientSocket.getOutputStream());
+	    			out.flush();
+	    			
+	    			//write the message to the stream
+	                out.writeBytes(outgoingMessage);
+	                clientSocket.close();
+	    		} 
+	    		
+	    		//I/O error or interrupt
+	    		catch (IOException e) 
+	    		{
+	    			e.printStackTrace();
+	    		} 
+
 	            //Sleep so one message is sent every 2 seconds
+	            Thread.sleep(2000);
         	}
         	
         	//After all messages have been sent, close the socket
         	clientSocket.close();
-
         }
         
         //Bad IP address
@@ -70,12 +79,18 @@ public class ThreadSender implements Runnable
         catch (IOException e)	
         {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+        } 
+        catch (InterruptedException e) 
+        {
+			
 			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Populates the random message ArrayList with random data
+	 * @param list - the list to be populated
+	 */
 	public void populateRandomMessages(ArrayList<String> list)
 	{
 		for(int i = 0; i < 50; i++)
@@ -106,6 +121,14 @@ public class ThreadSender implements Runnable
 
 	}
 	
+	/**
+	 * Builds the message to be sent by concatenating all of the information 
+	 * @param clientNumber the number of the client(origin of the message)
+	 * @param input the binary string the message will contain
+	 * @param sabotaged - whether or not the message has purposely had its 
+	 * checksum calculated incorrectly
+	 * @return the message to be sent
+	 */
 	public String buildMessage(char clientNumber, String input, boolean sabotaged)
 	{
 		//The client number or source of the message
@@ -142,7 +165,10 @@ public class ThreadSender implements Runnable
 		return result;
 	}
 	
-	
+	/**
+	 * Randomly generates a number that will determine the messages destination
+	 * @return The randomly generated number as a character
+	 */
 	public char randomDestination()
 	{
 		//The int value of ascii char '4'

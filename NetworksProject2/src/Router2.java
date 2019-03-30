@@ -36,16 +36,15 @@ public class Router2
         	{
         		//Creates a new thread for each socket accept, thread determines destination and sends the message
         		Thread thread =  new Thread(new RequestHandler(serverSocket.accept(), "router_2_table.txt", '2'));
-        		synchronized(this)
-        		{
-        			//starts the thread
-        			thread.start();
-        		}
+        	
+    			//starts the thread
+    			thread.start();
+    			thread.join();
         	}
         }
+        //I/O error or interrupt
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

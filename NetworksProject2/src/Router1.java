@@ -24,11 +24,11 @@ public class Router1
         {	//Listening for incoming messages on port 4446
             serverSocket = new ServerSocket(4446); 	
         }
+        //I/O error or interrupt
         catch (IOException e)
         {
             e.printStackTrace();
         }
-
         try
         {
         	//Continuously listens for new incoming messages
@@ -40,20 +40,18 @@ public class Router1
         			//starts the thread
         			thread.start();
         			thread.join();
-        		
         	}
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
     
 	public static void main(String[] args) throws InterruptedException 
 	{
-		Router1 server = new Router1();
-		server.setupServer();
+		Router1 router1 = new Router1();
+		router1.setupServer();
 
 	}
 

@@ -27,6 +27,7 @@ Socket destinationSocket;
 		//The file name of the appropriate routing table
 		this.routerTable = routerTable;
 		
+		//The number of the router ( 1 or 2 , for my portion of the project)
 		this.routerNumber = routerNumber;
 	}
 	
@@ -63,10 +64,11 @@ Socket destinationSocket;
 					
 					if(message.charAt(1) == routerNumber)
 					{
+						//Destination of message is the client running on this machine
 						destinationSocket = new Socket("127.0.0.1", 7771 );
 					}
 					else
-					{
+					{	//destination of message is another router
 						destinationSocket = new Socket(destination, 4447);
 					}
 					
@@ -81,7 +83,7 @@ Socket destinationSocket;
 					DataOutputStream output = new DataOutputStream(destinationSocket.getOutputStream());
 					
 					//Write the message to the stream
-					output.writeBytes(message +"\n");  // Need newline here for client scanner to find.
+					output.writeBytes(message +"\n");  
 					output.flush();
 					destinationSocket.close();
 					}

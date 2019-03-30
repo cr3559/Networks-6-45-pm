@@ -7,7 +7,7 @@ import java.net.UnknownHostException;
  * A client that sends outgoing messages, as well as receives incoming messages.
  * received messages are verified to ensure valid data via a checksum
  */
-public class Client1 extends GenericClient
+public class Client1
 {
 
 	/**
