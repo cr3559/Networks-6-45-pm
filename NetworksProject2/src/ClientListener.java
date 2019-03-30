@@ -2,6 +2,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 /**
@@ -12,18 +13,23 @@ public class ClientListener  implements Runnable
 {
 	//The socket which the message is recieved through
 	Socket socket;
+	ServerSocket serverSocket;
 	
-	public ClientListener(Socket socket) throws IOException
+	public ClientListener(ServerSocket serverSocket) throws IOException
 	{	
 		//Socket which the message is received through
-		this.socket = socket;
+		this.serverSocket = serverSocket;
 	}
 
 
 	public  void run()
 	{
 		try 
-		{	//Scanner used to read the incoming message
+		{	
+			while(true)
+			{
+			socket = serverSocket.accept();
+			//Scanner used to read the incoming message
 			Scanner scanner = new Scanner(socket.getInputStream());
 			
 			//The delimiting character for the scanner
@@ -50,10 +56,11 @@ public class ClientListener  implements Runnable
 				else
 				{
 					System.out.println("Unable to verify checksum: Data Corrupt\n");
+					this.socket.close();
 				} 
-				this.socket.close();
 			}
 			
+		}
 		}
 		catch (IOException e) 
 		{

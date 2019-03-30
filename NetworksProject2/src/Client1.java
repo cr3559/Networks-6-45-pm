@@ -18,63 +18,17 @@ public class Client1 extends GenericClient
 	 */
     public  void setupClient() throws IOException, InterruptedException
     {	
-    	populateRandomMessages();
-        try
-        {
-        	//Socket that listens for incoming messages
-        	ServerSocket serverSocket = new ServerSocket(7771);
-        	
-        	for( int i = 0;  i< randomMessages.size(); i++)
-        	{
-        		System.out.println("Message Number: " + (i + 1));
-        		
-        		//String to hold the message
-        		String outgoingMessage = null;
- 
-        		//Checksum of every 5th message is purposely corrupted
-	            if( (i + 1) % 5 == 0)
-	            {
-	            	sabotagedMessage = true;
-	            }
-	            else
-	            {
-	            	sabotagedMessage = false;
-	            }
-	            
-	            //The message to be sent 
-	            outgoingMessage = buildMessage('1',randomMessages.get(i), sabotagedMessage)+ ""+(char)255; // char(255) used for server scanner
-	            
-	            //socket created to this client's router (will change based on where we are running)
-	            clientSocket = new Socket("192.168.1.7", 4446); 
-	          
-	            //Create thread to send message and start the thread
-	            Thread clientSend = new Thread(new ClientSender(clientSocket, outgoingMessage));
-	            clientSend.start();
-	            
-	            //Create thread to accept incoming messages and start the thread
-	            Thread thread = new Thread(new ClientListener(serverSocket.accept()));
-	            thread.start();
-	            
-	            //Sleep so one message is sent every 2 seconds
-	            Thread.sleep(2000);
-        	}
-        	
-        	//After all messages have been sent, close the socket
-        	clientSocket.close();
+		//Socket thats listens for incoming messages
+    	ServerSocket serverSocket = new ServerSocket(7771);
+    	
+    	//Thread that sends messages
+		Thread sender = new Thread(new ThreadSender());
+		sender.start();
+		
+	    //Thread to accept incoming messages
+        Thread receiver = new Thread(new ClientListener(serverSocket));
+        receiver.start();
 
-        }
-        
-        //Bad IP address
-        catch (UnknownHostException e) 
-        {
-            e.printStackTrace();
-        }
-        
-        //failed or interrupted I/O
-        catch (IOException e)	
-        {
-            e.printStackTrace();
-        }
     }
     
     public static void main (String[] args) throws IOException, InterruptedException

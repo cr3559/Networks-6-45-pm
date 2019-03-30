@@ -35,12 +35,12 @@ public class Router1
         	while(true)
         	{
         		//Creates a new thread for each socket accept, thread determines destination and sends the message
-        		Thread thread =  new Thread(new RequestHandler(serverSocket.accept(), "router_1_table.txt"));
-        		synchronized(this)
-        		{
+        		Thread thread =  new Thread(new RequestHandler(serverSocket.accept(), "router_1_table.txt",'1'));
+        		
         			//starts the thread
         			thread.start();
-        		}
+        			thread.join();
+        		
         	}
         }
         catch (IOException e)

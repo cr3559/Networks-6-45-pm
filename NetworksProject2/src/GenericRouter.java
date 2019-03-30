@@ -1,44 +1,25 @@
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Handles finding the next destination IP address,
- * as well as sending the message to that IP address.
- * @author Christopher Roadcap
- */
-public class RequestHandler implements Runnable
+public abstract class GenericRouter 
 {
-char routerNumber;
-Socket incomingSocket;
-String routerTable;
-Socket destinationSocket;
-
-	public RequestHandler(Socket socket, String routerTable, char routerNumber) throws IOException
+	static Socket outgoingSocket;
+	static Socket destinationSocket;
+	String routerTable;
+	
+	public synchronized void route(Socket socket, String routingTable )
 	{
-		//The socket to send the message
-		this.incomingSocket = socket;
-		
-		//The file name of the appropriate routing table
-		this.routerTable = routerTable;
-		
-		this.routerNumber = routerNumber;
-	}
-	
-	
-	
-	public void run()
-	{
+		outgoingSocket = socket;
+		routerTable = routingTable;
 		try 
 		{
 			
 			//Reads input Stream of server
-			Scanner scanner = new Scanner(incomingSocket.getInputStream());
+			Scanner scanner = new Scanner(outgoingSocket.getInputStream());
 			
 			//The delimiting character for the scanner
 			char delimiterChar = (char) 255;
@@ -61,36 +42,39 @@ Socket destinationSocket;
 					String destination = findDestination(message);
 					
 					
-					if(message.charAt(1) == routerNumber)
+					//The socket used to send the message
+					if(message.charAt(1) != '1')
 					{
-						destinationSocket = new Socket("127.0.0.1", 7771 );
+						destinationSocket = new Socket(destination, 4447 );
 					}
 					else
 					{
-						destinationSocket = new Socket(destination, 4447);
+						destinationSocket = new Socket(destination,7771);
 					}
 					
 					//Determines if checksum is correct
 					if(verifyCheckSum(message))
 					{
+						DataOutputStream output = new DataOutputStream(destinationSocket.getOutputStream());
+						output.flush();
 						
 					System.out.println("Checksum Verified");
 					System.out.println("Full Message: " + message + "\n");
 					
 					//Output stream to write the message to
-					DataOutputStream output = new DataOutputStream(destinationSocket.getOutputStream());
 					
 					//Write the message to the stream
 					output.writeBytes(message +"\n");  // Need newline here for client scanner to find.
 					output.flush();
-					destinationSocket.close();
+					//destinationSocket.close();
 					}
 			
 					else 
 					{
 						System.out.println("Data Corrupted, message discarded.\n");
-						destinationSocket.close();
+						//destinationSocket.close();
 					}
+					destinationSocket.close();
 				}
 
 		}
@@ -170,5 +154,5 @@ Socket destinationSocket;
 		}
 		
 	}
-	  
+
 }

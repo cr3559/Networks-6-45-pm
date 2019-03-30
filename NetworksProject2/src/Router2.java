@@ -35,7 +35,7 @@ public class Router2
         	while(true)
         	{
         		//Creates a new thread for each socket accept, thread determines destination and sends the message
-        		Thread thread =  new Thread(new RequestHandler(serverSocket.accept(), "router_2_table.txt"));
+        		Thread thread =  new Thread(new RequestHandler(serverSocket.accept(), "router_2_table.txt", '2'));
         		synchronized(this)
         		{
         			//starts the thread

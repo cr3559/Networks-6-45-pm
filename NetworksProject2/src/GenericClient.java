@@ -21,35 +21,9 @@ public abstract class GenericClient
      * Fills the randomMessages array with random binary strings with 
      * the appropriate padding
      */
-	public void populateRandomMessages()
-	{
-		for(int i = 0; i < 50; i++)
-		{
-			//The maximum value of a 7 char binary string
-			int max = 127;
+	
 			
-			//The minimum value of the binary string
-			int min = 0 ;
-			
-			//a random number between 0 and 127
-			int randomData = (int) (Math.random() * ((max - min) + 1)) + min;
-			
-			//used to store the padding (preceding 0s) of the binary string if necessary 
-			String padding = "";
-			
-			//The binary string formed from randomData
-			String binary = Integer.toBinaryString(randomData);
-			for(int j= 0; j < 7 - binary.length(); j++)
-			{
-				padding += "0";
-			}
-			binary = padding + binary;
-			
-			//adds the random data to the ArrayList
-			randomMessages.add(binary);
-		}
-			
-	}
+	
 	
 	/**
 	 * 
