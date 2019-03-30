@@ -22,12 +22,13 @@ public class Client1
     	ServerSocket serverSocket = new ServerSocket(7771);
     	
     	//Thread that sends messages
-		Thread sender = new Thread(new ThreadSender());
+		Thread sender = new Thread(new ThreadSender('1'));
 		sender.start();
 		
 	    //Thread to accept incoming messages
         Thread receiver = new Thread(new ClientListener(serverSocket));
         receiver.start();
+        
 
     }
     

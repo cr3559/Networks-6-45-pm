@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -16,13 +17,14 @@ public class RequestHandler implements Runnable
 {
 char routerNumber;
 Socket incomingSocket;
+ServerSocket serverSocket;
 String routerTable;
 Socket destinationSocket;
 
-	public RequestHandler(Socket socket, String routerTable, char routerNumber) throws IOException
+	public RequestHandler(ServerSocket serverSocket, String routerTable, char routerNumber) throws IOException
 	{
-		//The socket to send the message
-		this.incomingSocket = socket;
+		//Socket which we are listening for messages on
+		this.serverSocket = serverSocket;
 		
 		//The file name of the appropriate routing table
 		this.routerTable = routerTable;
@@ -35,71 +37,74 @@ Socket destinationSocket;
 	
 	public void run()
 	{
-		try 
+		while(true)
 		{
-			
-			//Reads input Stream of server
-			Scanner scanner = new Scanner(incomingSocket.getInputStream());
-			
-			//The delimiting character for the scanner
-			char delimiterChar = (char) 255;
-			
-			//used to make the delimiting character into a string
-			String stringDelimiter = new StringBuilder().append(delimiterChar).toString();
-			
-			//Setting the delimiter
-			scanner = scanner.useDelimiter(stringDelimiter);
-
-				if(scanner.hasNext())
-				{	
-					//will hold the message
-					String message = "";
-					
-					//message from input stream
-					message = message + scanner.next();
-					
-					//The next location to send the message
-					String destination = findDestination(message);
-					
-					
-					if(message.charAt(1) == routerNumber)
-					{
-						//Destination of message is the client running on this machine
-						destinationSocket = new Socket("127.0.0.1", 7771 );
-					}
-					else
-					{	//destination of message is another router
-						destinationSocket = new Socket(destination, 4447);
-					}
-					
-					//Determines if checksum is correct
-					if(verifyCheckSum(message))
-					{
+			try 
+			{
+				this.incomingSocket = serverSocket.accept();
+				//Reads input Stream of server
+				Scanner scanner = new Scanner(incomingSocket.getInputStream());
+				
+				//The delimiting character for the scanner
+				char delimiterChar = (char) 255;
+				
+				//used to make the delimiting character into a string
+				String stringDelimiter = new StringBuilder().append(delimiterChar).toString();
+				
+				//Setting the delimiter
+				scanner = scanner.useDelimiter(stringDelimiter);
+	
+					if(scanner.hasNext())
+					{	
+						//will hold the message
+						String message = "";
 						
-					System.out.println("Checksum Verified");
-					System.out.println("Full Message: " + message + "\n");
-					
-					//Output stream to write the message to
-					DataOutputStream output = new DataOutputStream(destinationSocket.getOutputStream());
-					
-					//Write the message to the stream
-					output.writeBytes(message +"\n");  
-					output.flush();
-					destinationSocket.close();
-					}
-			
-					else 
-					{
-						System.out.println("Data Corrupted, message discarded.\n");
+						//message from input stream
+						message = message + scanner.next();
+						
+						//The next location to send the message
+						String destination = findDestination(message);
+						
+						
+						if(message.charAt(1) == routerNumber)
+						{
+							//Destination of message is the client running on this machine
+							destinationSocket = new Socket("127.0.0.1", 7771 );
+						}
+						else
+						{	//destination of message is another router
+							destinationSocket = new Socket(destination, 4446);
+						}
+						
+						//Determines if checksum is correct
+						if(verifyCheckSum(message))
+						{
+							
+						System.out.println("Checksum Verified");
+						System.out.println("Full Message: " + message + "\n");
+						
+						//Output stream to write the message to
+						DataOutputStream output = new DataOutputStream(destinationSocket.getOutputStream());
+						
+						//Write the message to the stream
+						output.writeBytes(message +"\n");  
+						output.flush();
 						destinationSocket.close();
+						}
+				
+						else 
+						{
+							System.out.println("Data Corrupted, message discarded.\n");
+							destinationSocket.close();
+						}
 					}
-				}
-
-		}
-		//Error in I/O
-		catch (IOException e) 
-		{
-			e.printStackTrace();
+	
+			}
+			//Error in I/O
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
 		}
 
 	}

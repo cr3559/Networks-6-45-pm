@@ -11,6 +11,12 @@ public class ThreadSender implements Runnable
 	ArrayList<String> randomMessages = new ArrayList<String>();;
 	boolean sabotagedMessage;
 	Socket clientSocket;
+	char clientNumber;
+	
+	public ThreadSender(char clientNumber)
+	{
+		this.clientNumber = clientNumber;
+	}
 
 	@Override
 	public void run() 
@@ -37,7 +43,7 @@ public class ThreadSender implements Runnable
 	            }
 	            
 	            //The message to be sent 
-	            outgoingMessage = buildMessage('1',randomMessages.get(i), sabotagedMessage)+ ""+(char)255; // char(255) used for server scanner
+	            outgoingMessage = buildMessage(clientNumber,randomMessages.get(i), sabotagedMessage)+ ""+(char)255; // char(255) used for server scanner
 	            
 	            //socket created to this client's router (will change based on where we are running)
 	            clientSocket = new Socket("127.0.0.1", 4446); 
