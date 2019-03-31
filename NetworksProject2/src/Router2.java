@@ -21,7 +21,7 @@ public class Router2
 	public void setupServer() throws InterruptedException
     {    	  
         try
-        {	//Listening for incoming messages on port 4446
+        {	//Listening for incoming messages on port 4449
             serverSocket = new ServerSocket(4449); 	
         }
         //I/O error or interrupt

@@ -88,7 +88,7 @@ Socket destinationSocket;
 							DataOutputStream output = new DataOutputStream(destinationSocket.getOutputStream());
 							
 							//Write the message to the stream
-							output.writeBytes(message + (char)255 +"\n");  
+							output.writeBytes(message +"\n");  
 							output.flush();
 							output.close();
 							//destinationSocket.setSoLinger(true, 0);

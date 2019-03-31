@@ -29,7 +29,6 @@ public class ThreadSender implements Runnable
         {
         	for( int i = 0;  i< randomMessages.size(); i++)
         	{
-        		Thread.sleep(1000);
         		System.out.println("Message Number: " + (i + 1));
         		
         		//String to hold the message
@@ -60,7 +59,7 @@ public class ThreadSender implements Runnable
 	    			out.flush();
 	    			
 	    			//write the message to the stream
-	                out.writeBytes(outgoingMessage);
+	                out.writeBytes(outgoingMessage + (char)255);
 	                out.flush();
 	                clientSocket.close();
 	    		} 
@@ -103,7 +102,7 @@ public class ThreadSender implements Runnable
 	 */
 	public void populateRandomMessages(ArrayList<String> list)
 	{
-		for(int i = 0; i <1; i++)
+		for(int i = 0; i <10; i++)
 		{
 			//The maximum value of a 7 char binary string
 			int max = 127;
