@@ -1,8 +1,5 @@
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 /**
  * @author Christopher Roadcap
  * A client that sends outgoing messages, as well as receives incoming messages.

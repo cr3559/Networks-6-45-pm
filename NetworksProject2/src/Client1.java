@@ -1,7 +1,5 @@
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
 /**
  * @author Christopher Roadcap
  * A client that sends outgoing messages, as well as receives incoming messages.
@@ -28,8 +26,6 @@ public class Client1
 	    //Thread to accept incoming messages
         Thread receiver = new Thread(new ClientListener(serverSocket));
         receiver.start();
-        
-
     }
     
     public static void main (String[] args) throws IOException, InterruptedException
