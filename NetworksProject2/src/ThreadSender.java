@@ -59,7 +59,7 @@ public class ThreadSender implements Runnable
 	    			out.flush();
 	    			
 	    			//write the message to the stream
-	                out.writeBytes(outgoingMessage + (char)255);
+	                out.writeBytes(outgoingMessage );
 	                out.flush();
 	                clientSocket.close();
 	    		} 
