@@ -22,7 +22,7 @@ public class Router1
     {    	  
         try
         {	//Listening for incoming messages on port 4446
-            serverSocket = new ServerSocket(4446); 	
+            serverSocket = new ServerSocket(4449); 	
         }
         //I/O error or interrupt
         catch (IOException e)

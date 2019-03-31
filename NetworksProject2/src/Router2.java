@@ -22,7 +22,7 @@ public class Router2
     {    	  
         try
         {	//Listening for incoming messages on port 4446
-            serverSocket = new ServerSocket(4446); 	
+            serverSocket = new ServerSocket(4449); 	
         }
         //I/O error or interrupt
         catch (IOException e)
@@ -36,7 +36,7 @@ public class Router2
         		
         			//starts the thread
         			thread.start();
-        			thread.join();
+        			//thread.join();
         }
         catch (IOException e)
         {

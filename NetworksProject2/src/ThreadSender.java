@@ -12,10 +12,12 @@ public class ThreadSender implements Runnable
 	boolean sabotagedMessage;
 	Socket clientSocket;
 	char clientNumber;
+	int port;
 	
-	public ThreadSender(char clientNumber)
+	public ThreadSender(char clientNumber, int port)
 	{
 		this.clientNumber = clientNumber;
+		this.port = port;
 	}
 
 	@Override
@@ -27,6 +29,7 @@ public class ThreadSender implements Runnable
         {
         	for( int i = 0;  i< randomMessages.size(); i++)
         	{
+        		Thread.sleep(1000);
         		System.out.println("Message Number: " + (i + 1));
         		
         		//String to hold the message
@@ -46,7 +49,7 @@ public class ThreadSender implements Runnable
 	            outgoingMessage = buildMessage(clientNumber,randomMessages.get(i), sabotagedMessage)+ ""+(char)255; // char(255) used for server scanner
 	            
 	            //socket created to this client's router (will change based on where we are running)
-	            clientSocket = new Socket("127.0.0.1", 4446); 
+	            clientSocket = new Socket("127.0.0.1", this.port); 
 	            
 	            //The output stream to write to
 	    		DataOutputStream out;
@@ -58,6 +61,7 @@ public class ThreadSender implements Runnable
 	    			
 	    			//write the message to the stream
 	                out.writeBytes(outgoingMessage);
+	                out.flush();
 	                clientSocket.close();
 	    		} 
 	    		
@@ -99,7 +103,7 @@ public class ThreadSender implements Runnable
 	 */
 	public void populateRandomMessages(ArrayList<String> list)
 	{
-		for(int i = 0; i < 50; i++)
+		for(int i = 0; i <1; i++)
 		{
 			//The maximum value of a 7 char binary string
 			int max = 127;
@@ -181,7 +185,7 @@ public class ThreadSender implements Runnable
 		int asciiMax = 52;
 		
 		//The int value of ascii char '1'
-		int asciiMin = 49;
+		int asciiMin = 51;
 		
 		//Holds the destination of the message as an int
 		int destination = (int) (Math.random() * ((asciiMax - asciiMin) + 1)) + asciiMin;
