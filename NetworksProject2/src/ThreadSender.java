@@ -102,7 +102,7 @@ public class ThreadSender implements Runnable
 	 */
 	public void populateRandomMessages(ArrayList<String> list)
 	{
-		for(int i = 0; i < randomMessages.size(); i++)
+		for(int i = 0; i < 10; i++)
 		{
 			//The maximum value of a 7 char binary string
 			int max = 127;

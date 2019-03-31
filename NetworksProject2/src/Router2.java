@@ -36,7 +36,7 @@ public class Router2
         		
         			//starts the thread
         			thread.start();
-        			
+        			thread.join();
         }
         catch (IOException e)
         {
