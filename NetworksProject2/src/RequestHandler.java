@@ -105,7 +105,6 @@ Socket destinationSocket;
 						{
 							scanner.close();
 						}
-						Thread.sleep(200);
 						incomingSocket.close();
 						destinationSocket.close();
 					}
@@ -114,11 +113,7 @@ Socket destinationSocket;
 			catch (IOException e) 
 			{	
 			 e.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
+			} 
 		
 		
 	}

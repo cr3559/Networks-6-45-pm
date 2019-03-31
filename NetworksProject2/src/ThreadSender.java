@@ -102,7 +102,7 @@ public class ThreadSender implements Runnable
 	 */
 	public void populateRandomMessages(ArrayList<String> list)
 	{
-		for(int i = 0; i <10; i++)
+		for(int i = 0; i < 50; i++)
 		{
 			//The maximum value of a 7 char binary string
 			int max = 127;
@@ -166,7 +166,7 @@ public class ThreadSender implements Runnable
 		}
 		
 		System.out.println("Outgoing Destination: " + destination);
-		System.out.println("Outgoing Data: " + data);
+		System.out.println("Outgoing Data: " + data + "\n");
 		
 		//The message to be sent to the Server
 		String result = new StringBuilder().append(source).append(destination).append(checkSumAsChar).toString() + data;
@@ -184,7 +184,7 @@ public class ThreadSender implements Runnable
 		int asciiMax = 52;
 		
 		//The int value of ascii char '1'
-		int asciiMin = 51;
+		int asciiMin = 49;
 		
 		//Holds the destination of the message as an int
 		int destination = (int) (Math.random() * ((asciiMax - asciiMin) + 1)) + asciiMin;
