@@ -20,13 +20,14 @@ public class Client2
     	ServerSocket serverSocket = new ServerSocket(7771);
     	
     	//Thread that sends messages
-		Thread sender = new Thread(new ThreadSender('2',4449));
+		Thread sender = new Thread(new ThreadSender('2',4447));
 		sender.start();
-		
+		while(true)
+		{
 	    //Thread to accept incoming messages
-        Thread receiver = new Thread(new ClientListener(serverSocket));
+        Thread receiver = new Thread(new ClientListener(serverSocket.accept()));
         receiver.start();
-        
+		}
 
     }
     

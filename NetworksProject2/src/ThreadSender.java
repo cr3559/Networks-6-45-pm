@@ -14,6 +14,7 @@ public class ThreadSender implements Runnable
 	char clientNumber;
 	int port;
 	
+	//Constructor
 	public ThreadSender(char clientNumber, int port)
 	{
 		this.clientNumber = clientNumber;
@@ -108,7 +109,7 @@ public class ThreadSender implements Runnable
 			int max = 127;
 			
 			//The minimum value of the binary string
-			int min = 0 ;
+			int min = 1 ;
 			
 			//a random number between 0 and 127
 			int randomData = (int) (Math.random() * ((max - min) + 1)) + min;

@@ -19,10 +19,11 @@ ServerSocket serverSocket;
 String routerTable;
 Socket destinationSocket;
 
-	public RequestHandler(ServerSocket serverSocket, String routerTable, char routerNumber  ) throws IOException
+	public RequestHandler(Socket incomingSocket, String routerTable, char routerNumber  ) throws IOException
 	{
 		//Socket which we are listening for messages on
-		this.serverSocket = serverSocket;
+		//this.serverSocket = serverSocket;
+		 this.incomingSocket = incomingSocket;
 		
 		//The file name of the appropriate routing table
 		this.routerTable = routerTable;
@@ -38,9 +39,9 @@ Socket destinationSocket;
 		String message = "";
 			try 
 			{
-				while(true)
+				//while(true)
 				{
-					this.incomingSocket = serverSocket.accept();
+					//this.incomingSocket = serverSocket.accept();
 					//Reads input Stream of server
 					Scanner scanner = new Scanner(incomingSocket.getInputStream());
 					
@@ -54,50 +55,47 @@ Socket destinationSocket;
 					scanner = scanner.useDelimiter(stringDelimiter);
 		
 						if(scanner.hasNext())
-						{	
-							//will hold the message
-							
+						{								
 							//message from input stream
 							message = scanner.nextLine() ;
 							scanner.close();
 							
 							//The next location to send the message
 							String destination = findDestination(message);
+							System.out.println(message);
 							
 							
-							if(message.charAt(1) == routerNumber)
-							{
-								//Destination of message is the client running on this machine
-								destinationSocket = new Socket("127.0.0.1", 7771 );
-							}
-							else
-							{	//destination of message is another router
-								destinationSocket = new Socket(destination, 4449);
-							}
+								if(message.charAt(1) == routerNumber)
+								{
+									//Destination of message is the client running on this machine
+									destinationSocket = new Socket("127.0.0.1", 7771 );
+								}
+								else
+								{	//destination of message is another router
+									System.out.println("DESTINATION:"+  destination);
+									destinationSocket = new Socket(destination, 4447);
+								}
+								
+							
 							
 							//Determines if checksum is correct
 							if(verifyCheckSum(message))
 							{
+								System.out.println("Checksum Verified");
+								System.out.println("Full Message: " + message + "\n");
 								
-							System.out.println("Checksum Verified");
-							System.out.println("Full Message: " + message + "\n");
-							
-							//Output stream to write the message to
-							DataOutputStream output = new DataOutputStream(destinationSocket.getOutputStream());
-							
-							//Write the message to the stream
-							output.writeBytes(message +"\n");  
-							output.flush();
-							output.close();
-							//destinationSocket.setSoLinger(true, 0);
+								//Output stream to write the message to
+								DataOutputStream output = new DataOutputStream(destinationSocket.getOutputStream());
+								
+								//Write the message to the stream
+								output.writeBytes(message +"\n");  
+								output.flush();
+								output.close();
 							}
-					
 							else 
 							{
 								System.out.println("Data Corrupted, message discarded.\n");
-								
 							}
-							
 						}
 						else
 						{
@@ -112,8 +110,6 @@ Socket destinationSocket;
 			{	
 			 e.printStackTrace();
 			} 
-		
-		
 	}
 	
 	/**

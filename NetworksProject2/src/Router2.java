@@ -17,37 +17,33 @@ public class Router2
 	 * Creates a server socket to listen for incoming messages. When a message is received,
 	 * A thread is made to determine where the message should be sent next, and then sends the message
 	 * @throws InterruptedException
+	 * @throws IOException 
 	 */
-	public void setupServer() throws InterruptedException
+	public void setupServer() throws InterruptedException, IOException
     {    	  
-        try
-        {	//Listening for incoming messages on port 4449
-            serverSocket = new ServerSocket(4449); 	
-        }
-        //I/O error or interrupt
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+       serverSocket = new ServerSocket(4447);
         try
         {
+        	while(true)
+        	{
         		//Creates a new thread for each socket accept, thread determines destination and sends the message
-        		Thread thread =  new Thread(new RequestHandler(serverSocket, "router_2_table.txt",'2'));
+        		Thread thread =  new Thread(new RequestHandler(serverSocket.accept(), "router_2_table.txt",'2'));
         		
-        			//starts the thread
-        			thread.start();
-        			thread.join();
+    			//starts the thread
+    			thread.start();
+    			thread.join();
+        	}
         }
+        //I/O error
         catch (IOException e)
         {
             e.printStackTrace();
         }
     }
     
-	public static void main(String[] args) throws InterruptedException 
+	public static void main(String[] args) throws InterruptedException, IOException 
 	{
 		Router2 router2 = new Router2();
 		router2.setupServer();
-
 	}
 }

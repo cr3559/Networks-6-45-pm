@@ -12,10 +12,10 @@ public class ClientListener  implements Runnable
 	Socket socket;
 	ServerSocket serverSocket;
 	
-	public ClientListener(ServerSocket serverSocket) throws IOException
+	public ClientListener(Socket listenSocket) throws IOException
 	{	
 		//Socket which the message is received through
-		this.serverSocket = serverSocket;
+		socket = listenSocket;
 	}
 
 
@@ -23,9 +23,6 @@ public class ClientListener  implements Runnable
 	{
 		try 
 		{	
-			while(true)
-			{
-			socket = serverSocket.accept();
 			//Scanner used to read the incoming message
 			Scanner scanner = new Scanner(socket.getInputStream());
 			
@@ -55,14 +52,11 @@ public class ClientListener  implements Runnable
 				System.out.println("Unable to verify checksum: Data Corrupt\n");
 				this.socket.close();
 			} 
-			
-			}
 		}
 		catch (IOException e) 
 		{
 			e.printStackTrace();
 		}
-		
 	}
 
 	/**
@@ -103,8 +97,6 @@ public class ClientListener  implements Runnable
 			//invalid checksum
 			return false;
 		}
-	
-	}
-		
+	}	
 }
 

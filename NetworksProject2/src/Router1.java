@@ -22,7 +22,7 @@ public class Router1
     {    	  
         try
         {	//Listening for incoming messages on port 4446
-            serverSocket = new ServerSocket(4449); 	
+            serverSocket = new ServerSocket(4447); 	
         }
         //I/O error or interrupt
         catch (IOException e)
@@ -31,12 +31,17 @@ public class Router1
         }
         try
         {
+        	while(true)
+        	{
         		//Creates a new thread for each socket accept, thread determines destination and sends the message
-        		Thread thread =  new Thread(new RequestHandler(serverSocket, "router_1_table.txt",'1'));
+        		Thread thread =  new Thread(new RequestHandler(serverSocket.accept(), "router_1_table.txt",'1'));
         		
         			//starts the thread
         			thread.start();
+        			
+        			//joins the thread
         			thread.join();
+        	}
         }
         catch (IOException e)
         {

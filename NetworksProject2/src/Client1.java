@@ -16,22 +16,24 @@ public class Client1
 	 */
     public  void setupClient() throws IOException, InterruptedException
     {	
-		//Socket thats listens for incoming messages
     	ServerSocket serverSocket = new ServerSocket(7771);
+		//Socket thats listens for incoming messages
+    	///ServerSocket serverSocket = new ServerSocket(7771);
     	
     	//Thread that sends messages
-		Thread sender = new Thread(new ThreadSender('1',4449)); //ensure ports are correct
+		Thread sender = new Thread(new ThreadSender('1',4447)); //ensure ports are correct
 		sender.start();
 		
+		while(true)
+		{
 	    //Thread to accept incoming messages
-        Thread receiver = new Thread(new ClientListener(serverSocket));
+        Thread receiver = new Thread(new ClientListener(serverSocket.accept()));
         receiver.start();
+		}
     }
     
     public static void main (String[] args) throws IOException, InterruptedException
-    {
+    { 
     	new Client1().setupClient();
     }
-
-
 }
