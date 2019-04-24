@@ -4,6 +4,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.zip.CRC32;
 
 public class ThreadSender implements Runnable 
 {
@@ -46,7 +47,7 @@ public class ThreadSender implements Runnable
 	            }
 	            
 	            //The message to be sent 
-	            outgoingMessage = buildMessage(clientNumber,randomMessages.get(i), sabotagedMessage)+ ""+(char)255; // char(255) used for server scanner
+	            outgoingMessage = buildMessage(clientNumber,"!!!!!!!", sabotagedMessage)+ ""+(char)255; // char(255) used for server scanner
 	            
 	            //socket created to this client's router (will change based on where we are running)
 	            clientSocket = new Socket("127.0.0.1", this.port); 
@@ -148,29 +149,55 @@ public class ThreadSender implements Runnable
 		char destination = randomDestination();
 		
 		//The binary string
-		String data = input;
+		byte[] data = input.getBytes();
+		
+		int finalChecksum = 0 ;
+		for(int i = 0; i < input.length(); i++)
+		{
+			if(finalChecksum <= 255)
+			{
+				finalChecksum = finalChecksum +(int)input.charAt(i);
+			}
+			else 
+			{
+				finalChecksum = (int)input.charAt(i);
+			}
+		}
+		
+		int oc = onesComplement(finalChecksum);
+		
+		System.out.println("ONES COMP: " + oc);
 		
 		//The value of the binary string as an int
-		int checkSum =Integer.parseInt(data,2);
+//		String checkSum = "7";
+//		CRC32 check = new CRC32();
+//		check.update(data, 0, data.length);
+//		
+//		int checksum = Integer.parseInt(checkSum);
+//		String binaryCheck = Integer.toBinaryString(checksum);
+//		
+//		System.out.println("CHECKSUM AS STRING:" + binaryCheck +  "AS CRC"+ Long.toBinaryString(check.getValue()));
+//		
 		
-		//The ascii value coresponding to a specified int
+		
+		//The ascii value corresponding to a specified int
 		char checkSumAsChar;
 			
 		//Purposely corrupts the checksum if the message is flagged as sabotaged
 		if(!sabotaged)
 		{
-			checkSumAsChar = (char)(checkSum);
+			//checkSumAsChar = (char)(checkSum);
 		}
 		else
 		{
-			checkSumAsChar = (char)(checkSum +30);
+			//checkSumAsChar = (char)(checkSum +30);
 		}
 		
 		System.out.println("Outgoing Destination: " + destination);
-		System.out.println("Outgoing Data: " + data + "\n");
+		System.out.println("Outgoing Data: " + input + "\n");
 		
 		//The message to be sent to the Server
-		String result = new StringBuilder().append(source).append(destination).append(checkSumAsChar).toString() + data;
+		String result = new StringBuilder().append(source).append(destination)+ "a" + data;
 		
 		return result;
 	}
@@ -194,5 +221,19 @@ public class ThreadSender implements Runnable
 		char destinationAsChar = (char)destination;
 		return destinationAsChar;
 	}
+	
+    static int onesComplement(int n) 
+    { 
+          
+        // Find number of bits in the  
+        // given integer 
+        int number_of_bits =  
+               (int)(Math.floor(Math.log(n) / 
+                             Math.log(2))) + 1; 
+  
+        // XOR the given integer with poe(2, 
+        // number_of_bits-1 and print the result 
+        return ((1 << number_of_bits) - 1) ^ n; 
+    } 
 	
 }
