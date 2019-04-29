@@ -59,8 +59,9 @@ public class ThreadSender implements Runnable
 	    			out = new DataOutputStream(this.clientSocket.getOutputStream());
 	    			out.flush();
 	    			
+	    			byte[] bytes= outgoingMessage.getBytes();
 	    			//write the message to the stream
-	                out.writeBytes(outgoingMessage );
+	                out.write(bytes);
 	                out.flush();
 	                clientSocket.close();
 	    		} 
@@ -182,7 +183,7 @@ public class ThreadSender implements Runnable
 	public char randomDestination()
 	{
 		//The int value of ascii char '4'
-		int asciiMax = 52;
+		int asciiMax = 49;
 		
 		//The int value of ascii char '1'
 		int asciiMin = 49;

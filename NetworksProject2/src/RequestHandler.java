@@ -43,22 +43,11 @@ Socket destinationSocket;
 				{
 					//this.incomingSocket = serverSocket.accept();
 					//Reads input Stream of server
-					Scanner scanner = new Scanner(incomingSocket.getInputStream());
+					byte [] incoming = incomingSocket.getInputStream().readAllBytes();
+					message = convertToString(incoming);
 					
-					//The delimiting character for the scanner
-					char delimiterChar = (char) 255;
-					
-					//used to make the delimiting character into a string
-					String stringDelimiter = new StringBuilder().append(delimiterChar).toString();
-					
-					//Setting the delimiter
-					scanner = scanner.useDelimiter(stringDelimiter);
-		
-						if(scanner.hasNext())
-						{								
-							//message from input stream
-							message = scanner.nextLine() ;
-							scanner.close();
+						
+						
 							
 							//The next location to send the message
 							String destination = findDestination(message);
@@ -97,13 +86,10 @@ Socket destinationSocket;
 								System.out.println("Data Corrupted, message discarded.\n");
 							}
 						}
-						else
-						{
-							scanner.close();
-						}
+
 						incomingSocket.close();
 						destinationSocket.close();
-					}
+					
 				}
 			//Error in I/O
 			catch (IOException e) 
@@ -179,6 +165,16 @@ Socket destinationSocket;
 			return false;
 		}
 		
+	}
+	
+	public String convertToString(byte[] bytes)
+	{	String result = "";
+		for(byte b: bytes)
+		{
+			result += (char)b;
+		}
+		System.out.println("RESULT" + result);
+		return result;
 	}
 	  
 }
