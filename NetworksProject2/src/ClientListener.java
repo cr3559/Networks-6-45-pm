@@ -41,11 +41,11 @@ public class ClientListener  implements Runnable
 				String message = scanner.next();
 				
 				//Determines if the checksum is valid
-				if(verifyCheckSum(message))
-				{
-					System.out.println("Checksum Verified: Data Intact\n");
-					this.socket.close();
-				}
+				//if(verifyCheckSum(message))
+				//{
+				//	System.out.println("Checksum Verified: Data Intact\n");
+				//	this.socket.close();
+				//}
 			}
 			else
 			{
@@ -65,38 +65,38 @@ public class ClientListener  implements Runnable
 	 * @param incomingMessage the message that has been received
 	 * @return True(valid checksum) or False(invalid checksum)
 	 */
-	public boolean verifyCheckSum(String incomingMessage)
-	{
-		//The source of the incoming message
-		char source = incomingMessage.charAt(0);
-		
-		//The destination of the incoming message
-		char destination = incomingMessage.charAt(1);
-		
-		//The checksum of the incoming message
-		int checkSum = incomingMessage.charAt(2);
-		
-		//The binary string of the incoming data
-		String data = incomingMessage.substring(3, 10);
-		
-		//The binary string in decimal form
-		int actualSum = Integer.parseInt(data, 2);
-		
-		System.out.println("Incoming Source: "+ source);
-		System.out.println("Incoming Destination: " + destination);
-		System.out.println("Incoming Checksum: " + checkSum);		
-		System.out.println("Incoming Data: " + data);
-		
-		if(checkSum == actualSum)
-		{	
-			//valid checksum
-			return true;
-		}
-		else
-		{
-			//invalid checksum
-			return false;
-		}
+	//public boolean verifyCheckSum(String incomingMessage)
+	//{
+//		//The source of the incoming message
+//		char source = incomingMessage.charAt(0);
+//		
+//		//The destination of the incoming message
+//		char destination = incomingMessage.charAt(1);
+//		
+//		//The checksum of the incoming message
+//		int checkSum = incomingMessage.charAt(2);
+//		
+//		//The binary string of the incoming data
+//		String data = incomingMessage.substring(3, 10);
+//		
+//		//The binary string in decimal form
+//		int actualSum = Integer.parseInt(data, 2);
+//		
+//		System.out.println("Incoming Source: "+ source);
+//		System.out.println("Incoming Destination: " + destination);
+//		System.out.println("Incoming Checksum: " + checkSum);		
+//		System.out.println("Incoming Data: " + data);
+//		
+//		if(checkSum == actualSum)
+//		{	
+//			//valid checksum
+//			return true;
+//		}
+//		else
+//		{
+//			//invalid checksum
+//			return false;
+//		}
 	}	
-}
+//}
 

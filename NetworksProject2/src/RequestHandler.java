@@ -1,8 +1,10 @@
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -36,59 +38,67 @@ Socket destinationSocket;
 	
 	public void run()
 	{
-		String message = "";
+		String message ;
 			try 
 			{
-				//while(true)
+				
+			
+				//InputStream stream = incomingSocket.getInputStream();
+				//this.incomingSocket = serverSocket.accept();
+				//Reads input Stream of server
+				byte[] incoming = new byte[12];
+				incomingSocket.getInputStream().read(incoming, 0, 10);
+				message = new String(incoming);
+				
+				
+		
+				//The next location to send the message
+				if(determineIfMyNetwork(message))
 				{
-					//this.incomingSocket = serverSocket.accept();
-					//Reads input Stream of server
-					byte [] incoming = incomingSocket.getInputStream().readAllBytes();
-					message = convertToString(incoming);
+					message = setMyNewDestinationMessage(message);
+					String destination = findDestination(message);
+				
 					
+					System.out.println(message);
+					
+					if(message.charAt(1) == routerNumber )
+					{
+						//Destination of message is the client running on this machine
+						destinationSocket = new Socket("127.0.0.1", 7771 );
+					}
+					else
+					{	//destination of message is another router
+						System.out.println("DESTINATION:"+  destination);
+						destinationSocket = new Socket(destination, 4447);
+					}
+					
+					//Determines if checksum is correct
+					if(verifyCheckSum(message))
+					{
+						System.out.println("Checksum Verified");
+						System.out.println("Full Message: " + message + "\n");
 						
+						//Output stream to write the message to
+						DataOutputStream output = new DataOutputStream(destinationSocket.getOutputStream());
 						
-							
-							//The next location to send the message
-							String destination = findDestination(message);
-							System.out.println(message);
-							
-							
-								if(message.charAt(1) == routerNumber)
-								{
-									//Destination of message is the client running on this machine
-									destinationSocket = new Socket("127.0.0.1", 7771 );
-								}
-								else
-								{	//destination of message is another router
-									System.out.println("DESTINATION:"+  destination);
-									destinationSocket = new Socket(destination, 4447);
-								}
-								
-							
-							
-							//Determines if checksum is correct
-							if(verifyCheckSum(message))
-							{
-								System.out.println("Checksum Verified");
-								System.out.println("Full Message: " + message + "\n");
-								
-								//Output stream to write the message to
-								DataOutputStream output = new DataOutputStream(destinationSocket.getOutputStream());
-								
-								//Write the message to the stream
-								output.writeBytes(message +"\n");  
-								output.flush();
-								output.close();
-							}
-							else 
-							{
-								System.out.println("Data Corrupted, message discarded.\n");
-							}
-						}
+						//Write the message to the stream
+						output.writeBytes(message +"\n");  
+						output.flush();
+						output.close();
+					}
+					else 
+					{
+						System.out.println("Data Corrupted, message discarded.\n");
+					}
+					incomingSocket.close();
+					destinationSocket.close();
+				}
+				else
+				{
+					routeToBGP(message);
+				}
+				
 
-						incomingSocket.close();
-						destinationSocket.close();
 					
 				}
 			//Error in I/O
@@ -98,6 +108,37 @@ Socket destinationSocket;
 			} 
 	}
 	
+	private String setMyNewDestinationMessage(String message) 
+	{
+		String result ="";
+		char dest = message.charAt(5);
+		char source = message.charAt(0);
+		String remainder = message.substring(3, 10);
+		char newDest = 0;
+		
+		switch(dest)
+		{
+		case 'q':
+			newDest = '1';
+			break;
+		case 'r':
+			newDest = '2';
+			break;
+		case 's':
+			newDest = '3';
+			break;
+		case 't':
+			newDest = '4';
+			break;
+		}
+		result = source + newDest + remainder;
+		
+		
+		return result;
+	}
+
+
+
 	/**
 	 * Finds the appropriate destination of the message via a routing table
 	 * @param message the message to be sent
@@ -142,30 +183,36 @@ Socket destinationSocket;
 	 */
 	public boolean verifyCheckSum(String message)
 	{
-		//The of the message as a char
-		int checkSum = message.charAt(2);
-		
-		//The binary string within the message
-		String data = message.substring(3, 10);
-		
-		//The value of the binary string in decimal form
-		int actualSum = Integer.parseInt(data, 2);
-		
-		if(checkSum == actualSum)
-		{
-			char source = message.charAt(0);
-			char destination = message.charAt(1);
-			System.out.println("Source: " + source);
-			System.out.println("Destination: " + destination);
-			System.out.println("Data: " + data);
-			return true;
+//		boolean isValid;
+//		int finalChecksum = 0 ;
+//		String payload = message.substring(3, 9);
+//		System.out.println("HERE LORD: " + payload);
+//		
+//		
+//		for(int i = 0; i < payload.length(); i++)
+//		{	
+//			finalChecksum += payload.charAt(i);
+//			
+//			if(finalChecksum > 255)
+//			{
+//				finalChecksum = payload.charAt(i);
+//			}
+//		}
+//			
+//			if (finalChecksum + message.charAt(2) == 255)
+//			{
+//				isValid = true; 
+//			}
+//			else
+//			{
+//				isValid = false;
+//			}
+//			
+//			return isValid;
+		return true;
 		}
-		else
-		{
-			return false;
-		}
-		
-	}
+	
+
 	
 	public String convertToString(byte[] bytes)
 	{	String result = "";
@@ -176,5 +223,48 @@ Socket destinationSocket;
 		System.out.println("RESULT" + result);
 		return result;
 	}
+	
+	public boolean determineIfMyNetwork(String message)
+	{
+		boolean result = false ;
+		char networkDest = message.charAt(4);
+		char[] array = {'q','r','s','t'};
+
+		for(int i = 0; i < array.length; i++)
+		{
+			if(networkDest == array[i])
+			{
+				result = true;
+			}
+		}
+		return result;
+	}
+	
+	public void routeToBGP(String message) throws UnknownHostException, IOException
+	{
+		String payload = message.substring(2, 10);
+		String destination = "56" +payload;
+		byte[] bytes = destination.getBytes();
+		
+		ArrayList<DataHolder> destinationList = new TableReader().readTable("bgpout.txt");
+		String address = "";
+		
+		for(DataHolder dh: destinationList)
+		{
+			if(routerNumber == dh.source.charAt(0))
+			{
+				address = dh.address;
+			}
+		}
+		
+		Socket destinationSocket = new Socket(address, 7771 );
+		destinationSocket.getOutputStream().write(bytes);
+		
+		destinationSocket.close();
+	
+		
+	}
+	
+	
 	  
 }

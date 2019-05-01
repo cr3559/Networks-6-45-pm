@@ -14,6 +14,8 @@ public class ThreadSender implements Runnable
 	Socket clientSocket;
 	char clientNumber;
 	int port;
+	char sourceNetwork = '7';
+	//char source
 	
 	//Constructor
 	public ThreadSender(char clientNumber, int port)
@@ -34,7 +36,7 @@ public class ThreadSender implements Runnable
         		System.out.println("Message Number: " + (i + 1));
         		
         		//String to hold the message
-        		String outgoingMessage = null;
+        		String outgoingMessage = "";
  
         		//Checksum of every 5th message is purposely corrupted
 	            if( (i + 1) % 5 == 0)
@@ -47,7 +49,7 @@ public class ThreadSender implements Runnable
 	            }
 	            
 	            //The message to be sent 
-	            outgoingMessage = buildMessage(clientNumber,"!!!!!!!", sabotagedMessage)+ ""+(char)255; // char(255) used for server scanner
+	            outgoingMessage = buildMessage(clientNumber,randomMessages.get(i) , sabotagedMessage); // char(255) used for server scanner
 	            
 	            //socket created to this client's router (will change based on where we are running)
 	            clientSocket = new Socket("127.0.0.1", this.port); 
@@ -107,28 +109,23 @@ public class ThreadSender implements Runnable
 	{
 		for(int i = 0; i < 10; i++)
 		{
+			String data = "";
 			//The maximum value of a 7 char binary string
-			int max = 127;
+			int max = 126;
 			
 			//The minimum value of the binary string
-			int min = 1 ;
+			int min = 32 ;
 			
-			//a random number between 0 and 127
-			int randomData = (int) (Math.random() * ((max - min) + 1)) + min;
+			//a random number between 32 and 126
 			
-			//used to store the padding (preceding 0s) of the binary string if necessary 
-			String padding = "";
-			
-			//The binary string formed from randomData
-			String binary = Integer.toBinaryString(randomData);
-			for(int j= 0; j < 7 - binary.length(); j++)
+			for(int j = 0; j < 5; j++ )
 			{
-				padding += "0";
+				int randomData = (int) (Math.random() * ((max - min) + 1)) + min;
+				data += (char) randomData;
 			}
-			binary = padding + binary;
 			
 			//adds the random data to the ArrayList
-			list.add(binary);
+			list.add(data);
 		}
 
 	}
@@ -136,7 +133,7 @@ public class ThreadSender implements Runnable
 	/**
 	 * Builds the message to be sent by concatenating all of the information 
 	 * @param clientNumber the number of the client(origin of the message)
-	 * @param input the binary string the message will contain
+	 * @param input the payload of the message
 	 * @param sabotaged - whether or not the message has purposely had its 
 	 * checksum calculated incorrectly
 	 * @return the message to be sent
@@ -144,61 +141,36 @@ public class ThreadSender implements Runnable
 	public String buildMessage(char clientNumber, String input, boolean sabotaged)
 	{
 		//The client number or source of the message
-		char source = clientNumber;
+		char localSource = clientNumber;
 		
 		//The destination the message should be sent to
-		char destination = randomDestination();
+		char localDestination = randomDestination();
 		
 		//The binary string
-		byte[] data = input.getBytes();
+		byte[] dataArray = input.getBytes();
 		
-		int finalChecksum = 0 ;
-		for(int i = 0; i < input.length(); i++)
-		{
-			if(finalChecksum <= 255)
-			{
-				finalChecksum = finalChecksum +(int)input.charAt(i);
-			}
-			else 
-			{
-				finalChecksum = (int)input.charAt(i);
-			}
-		}
-		
-		int oc = onesComplement(finalChecksum);
-		
-		System.out.println("ONES COMP: " + oc);
-		
-		//The value of the binary string as an int
-//		String checkSum = "7";
-//		CRC32 check = new CRC32();
-//		check.update(data, 0, data.length);
-//		
-//		int checksum = Integer.parseInt(checkSum);
-//		String binaryCheck = Integer.toBinaryString(checksum);
-//		
-//		System.out.println("CHECKSUM AS STRING:" + binaryCheck +  "AS CRC"+ Long.toBinaryString(check.getValue()));
-//		
+		String dataString = new String(dataArray);
 		
 		
+		
+		String stringChecksum = determineSourceNetworkClientChar() + randomNetworkDestination() + input;
 		//The ascii value corresponding to a specified int
-		char checkSumAsChar;
+		char checkSumAsChar = generateCheckSum(stringChecksum);
 			
 		//Purposely corrupts the checksum if the message is flagged as sabotaged
-		if(!sabotaged)
+		if(sabotaged)
 		{
-			//checkSumAsChar = (char)(checkSum);
-		}
-		else
-		{
-			//checkSumAsChar = (char)(checkSum +30);
+		//	checkSumAsChar +=1;
 		}
 		
-		System.out.println("Outgoing Destination: " + destination);
+		System.out.println("Outgoing Destination: " + localDestination);
 		System.out.println("Outgoing Data: " + input + "\n");
 		
+		
 		//The message to be sent to the Server
-		String result = new StringBuilder().append(source).append(destination)+ "a" + data;
+		String result = "" + localSource + localDestination + checkSumAsChar + determineSourceNetworkClientChar() + randomNetworkDestination() + dataString	;			
+				
+		System.out.println("RESULT IS THIS: " + result);
 		
 		return result;
 	}
@@ -207,7 +179,7 @@ public class ThreadSender implements Runnable
 	 * Randomly generates a number that will determine the messages destination
 	 * @return The randomly generated number as a character
 	 */
-	public char randomDestination()
+	public static char randomDestination()
 	{
 		//The int value of ascii char '4'
 		int asciiMax = 49;
@@ -222,19 +194,141 @@ public class ThreadSender implements Runnable
 		char destinationAsChar = (char)destination;
 		return destinationAsChar;
 	}
-	
+    
+    //Determines the network Source character based on HEX ascii value
+    public char determineSourceNetworkClientChar()
+    {
+    	char result;
+    	
+    	if(this.clientNumber == '1')
+    	{
+    		//7:1
+    		result = 'q';
+    	}
+    	else if(this.clientNumber == '2') 
+    	{
+    		//7:2
+    		result = 'r';
+    	}
+    	else if(this.clientNumber =='3')
+    	{
+    		//7:3
+    		result = 's';
+    	}
+    	else
+    	{
+    		//7:4
+    		result = 't';
+    	}
+    	return result;
+    }
+    
+    public static char randomNetworkDestination()
+    {
+    	String result= "";
+    	int minAsciiNetwork = 1;
+    	int maxAsciiNetwork = 7;
+    	int destinationNetwork = (int) (Math.random() * ((maxAsciiNetwork - minAsciiNetwork) + 1)) + minAsciiNetwork;
+    	
+    	char a = randomDestination();
+    	result = "" + destinationNetwork + a;
+    	System.out.println("DN: "+ destinationNetwork + " RD: " +a ); 
+    	
+    	
+    	
+    	//decimal value of string as hex
+    	int hex = Integer.parseInt(result,16);
+    	
+    	System.out.println("HEX STRING " + hex);
+    	return (char) hex;
+    	
+    }
+    
+    
+    public char generateCheckSum(String input)
+    {
+    	int finalChecksum = 0 ;
+    	byte tempSum = 0;
+		for(int i = 0; i < input.length(); i++)
+		{	
+			finalChecksum += input.charAt(i);
+			
+			if(finalChecksum > 255)
+			{
+				finalChecksum =  input.charAt(i);
+			}
+			
+			
+			
+		}
+		
+		//RESUME FIXING ONESCOMP
+		System.out.println("Actual Sum" + finalChecksum + "Checksum: " + tempSum );
+		int onesComp = 255 - finalChecksum;
+		
+		return (char) onesComp;
+    }
+    
     static int onesComplement(int n) 
     { 
-          
-        // Find number of bits in the  
-        // given integer 
-        int number_of_bits =  
-               (int)(Math.floor(Math.log(n) / 
-                             Math.log(2))) + 1; 
-  
-        // XOR the given integer with poe(2, 
-        // number_of_bits-1 and print the result 
-        return ((1 << number_of_bits) - 1) ^ n; 
+    	
+    	// Find number of bits in the  
+    	 //given integer 
+    	int number_of_bits =  
+    			(int)(Math.floor(Math.log(n) / 
+    					Math.log(2))) + 1; 
+    	
+    	// XOR the given integer with poe(2, 
+    	// number_of_bits-1 and print the result 
+    	return ((1 << number_of_bits) - 1) ^ n; 
+    	
+//    	String binary = Integer.toBinaryString(n);
+//    	String temp = "";
+//    	int result = 0;
+//    	for(int i = 0; i < binary.length(); i++)
+//    	{
+//    		if(binary.charAt(i) == '1')
+//    		{
+//    			temp += '0';
+//    		}
+//    		else
+//    		{
+//    			temp += 1;
+//    		}
+//    		
+//    	}
+//    	String finalString ="";
+//    	
+//    	for (int i = temp.length(); i  < 8; i++)
+//    	{
+//    		finalString += "0";
+//    	}
+//    	result = Integer.parseInt(finalString + temp,2);
+//    	System.out.println("UPDATED COMP: " + result + "\n TEMP:" + temp);
+//    	return result;
     } 
+    
+    public static void main (String [] args)
+    {
+    	randomNetworkDestination();
+    }
 	
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
