@@ -21,7 +21,7 @@ public class Client1
     	///ServerSocket serverSocket = new ServerSocket(7771);
     	
     	//Thread that sends messages
-		Thread sender = new Thread(new ThreadSender('1',4447)); //ensure ports are correct
+		Thread sender = new Thread(new ThreadSender('1',4566)); //ensure ports are correct
 		sender.start();
 		
 		while(true)

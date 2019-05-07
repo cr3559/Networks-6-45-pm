@@ -15,7 +15,7 @@ public class BGP
 	    {    	  
 	        try
 	        {	//Listening for incoming messages on port 4446
-	            serverSocket = new ServerSocket(4447); 	
+	            serverSocket = new ServerSocket(4566); 	
 	        }
 	        //I/O error or interrupt
 	        catch (IOException e)

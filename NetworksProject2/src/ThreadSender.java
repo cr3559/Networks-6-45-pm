@@ -257,56 +257,10 @@ public class ThreadSender implements Runnable
 			{
 				finalChecksum =  input.charAt(i);
 			}
-			
-			
-			
 		}
+		return (char) finalChecksum;
 		
-		//RESUME FIXING ONESCOMP
-		System.out.println("Actual Sum" + finalChecksum + "Checksum: " + tempSum );
-		int onesComp = 255 - finalChecksum;
-		
-		return (char) onesComp;
     }
-    
-    static int onesComplement(int n) 
-    { 
-    	
-    	// Find number of bits in the  
-    	 //given integer 
-    	int number_of_bits =  
-    			(int)(Math.floor(Math.log(n) / 
-    					Math.log(2))) + 1; 
-    	
-    	// XOR the given integer with poe(2, 
-    	// number_of_bits-1 and print the result 
-    	return ((1 << number_of_bits) - 1) ^ n; 
-    	
-//    	String binary = Integer.toBinaryString(n);
-//    	String temp = "";
-//    	int result = 0;
-//    	for(int i = 0; i < binary.length(); i++)
-//    	{
-//    		if(binary.charAt(i) == '1')
-//    		{
-//    			temp += '0';
-//    		}
-//    		else
-//    		{
-//    			temp += 1;
-//    		}
-//    		
-//    	}
-//    	String finalString ="";
-//    	
-//    	for (int i = temp.length(); i  < 8; i++)
-//    	{
-//    		finalString += "0";
-//    	}
-//    	result = Integer.parseInt(finalString + temp,2);
-//    	System.out.println("UPDATED COMP: " + result + "\n TEMP:" + temp);
-//    	return result;
-    } 
     
     public static void main (String [] args)
     {

@@ -38,7 +38,7 @@ Socket destinationSocket;
 	
 	public void run()
 	{
-		String message ;
+		String message = "";
 			try 
 			{
 				
@@ -46,8 +46,8 @@ Socket destinationSocket;
 				//InputStream stream = incomingSocket.getInputStream();
 				//this.incomingSocket = serverSocket.accept();
 				//Reads input Stream of server
-				byte[] incoming = new byte[12];
-				incomingSocket.getInputStream().read(incoming, 0, 10);
+				byte[] incoming = new byte[10];
+				incoming = incomingSocket.getInputStream().readAllBytes();
 				message = new String(incoming);
 				
 				
@@ -111,10 +111,10 @@ Socket destinationSocket;
 	private String setMyNewDestinationMessage(String message) 
 	{
 		String result ="";
-		char dest = message.charAt(5);
+		char dest = message.charAt(4);
 		char source = message.charAt(0);
-		String remainder = message.substring(3, 10);
-		char newDest = 0;
+		String remainder = message.substring(2, 10);
+		char newDest = '0';
 		
 		switch(dest)
 		{
@@ -131,7 +131,7 @@ Socket destinationSocket;
 			newDest = '4';
 			break;
 		}
-		result = source + newDest + remainder;
+		result = ""+source + newDest + remainder;
 		
 		
 		return result;
@@ -155,7 +155,7 @@ Socket destinationSocket;
 		
 		//The source of the message (where it was sent from)
 		char source = message.charAt(0);
-		
+	    
 		//The destination of the message (where it is going)
 		char destination = message.charAt(1);
 		
@@ -183,33 +183,31 @@ Socket destinationSocket;
 	 */
 	public boolean verifyCheckSum(String message)
 	{
-//		boolean isValid;
-//		int finalChecksum = 0 ;
-//		String payload = message.substring(3, 9);
-//		System.out.println("HERE LORD: " + payload);
-//		
-//		
-//		for(int i = 0; i < payload.length(); i++)
-//		{	
-//			finalChecksum += payload.charAt(i);
-//			
-//			if(finalChecksum > 255)
-//			{
-//				finalChecksum = payload.charAt(i);
-//			}
-//		}
-//			
-//			if (finalChecksum + message.charAt(2) == 255)
-//			{
-//				isValid = true; 
-//			}
-//			else
-//			{
-//				isValid = false;
-//			}
-//			
-//			return isValid;
-		return true;
+		boolean isValid;
+		int finalChecksum = 0 ;
+		String payload = message.substring(3, 10);
+		
+		
+		for(int i = 0; i < payload.length(); i++)
+		{	
+			finalChecksum += payload.charAt(i);
+			
+			if(finalChecksum > 255)
+			{
+				finalChecksum = payload.charAt(i);
+			}
+		}
+			
+			if (finalChecksum == (int) message.charAt(2))
+			{
+				isValid = true; 
+			}
+			else
+			{
+				isValid = false;
+			}
+			
+			return isValid;
 		}
 	
 
@@ -257,7 +255,7 @@ Socket destinationSocket;
 			}
 		}
 		
-		Socket destinationSocket = new Socket(address, 7771 );
+		Socket destinationSocket = new Socket(address, 4566 );
 		destinationSocket.getOutputStream().write(bytes);
 		
 		destinationSocket.close();
