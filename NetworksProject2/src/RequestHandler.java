@@ -24,7 +24,6 @@ Socket destinationSocket;
 	public RequestHandler(Socket incomingSocket, String routerTable, char routerNumber  ) throws IOException
 	{
 		//Socket which we are listening for messages on
-		//this.serverSocket = serverSocket;
 		 this.incomingSocket = incomingSocket;
 		
 		//The file name of the appropriate routing table
@@ -35,31 +34,32 @@ Socket destinationSocket;
 	}
 	
 	
-	
+	/**
+	 * Run method of thread
+	 */
 	public void run()
 	{
 		String message = "";
 			try 
 			{
-				
-			
-				//InputStream stream = incomingSocket.getInputStream();
-				//this.incomingSocket = serverSocket.accept();
 				//Reads input Stream of server
 				byte[] incoming = new byte[10];
 				incoming = incomingSocket.getInputStream().readAllBytes();
-				message = new String(incoming);
 				
+				//String that will hold the message, formed from the input stream of the socket
+				message = new String(incoming);
 				
 		
 				//The next location to send the message
 				if(determineIfMyNetwork(message))
 				{
+					//Interprets the network bytes to alter the destination
 					message = setMyNewDestinationMessage(message);
+					
+					//Finds destination of the message
 					String destination = findDestination(message);
 				
-					
-					System.out.println(message);
+					System.out.println("Message: " + message);
 					
 					if(message.charAt(1) == routerNumber )
 					{
@@ -88,19 +88,18 @@ Socket destinationSocket;
 					}
 					else 
 					{
+						//Checksum invalid
 						System.out.println("Data Corrupted, message discarded.\n");
 					}
 					incomingSocket.close();
 					destinationSocket.close();
 				}
 				else
-				{
+				{	//routes to bgp if destination is another network
 					routeToBGP(message);
 				}
 				
-
-					
-				}
+			}
 			//Error in I/O
 			catch (IOException e) 
 			{	
@@ -108,14 +107,32 @@ Socket destinationSocket;
 			} 
 	}
 	
+	/**
+	 * Sets the new destination bit of the message
+	 * @param message the message we are attempting to send
+	 * @return the new message with the modified destination
+	 */
 	private String setMyNewDestinationMessage(String message) 
-	{
+	{	//String to hold th final message
 		String result ="";
+		
+		//Network destination of the message
 		char dest = message.charAt(4);
+		
+		//Source of the message
 		char source = message.charAt(0);
+		
+		//rest of the message
 		String remainder = message.substring(2, 10);
+		
+		//Will hold the new destination of the message
 		char newDest = '0';
 		
+		/**
+		 * Each case represents the hex value that corresponds to my network, and the local client
+		 * for example, 'q' = 71 (network 7, client 1). We then place the appropriate client into the
+		 * new dest variable.
+		 */
 		switch(dest)
 		{
 		case 'q':
@@ -131,9 +148,10 @@ Socket destinationSocket;
 			newDest = '4';
 			break;
 		}
+		
+		//Concatenate final result
 		result = ""+source + newDest + remainder;
-		
-		
+
 		return result;
 	}
 
@@ -200,34 +218,39 @@ Socket destinationSocket;
 			
 			if (finalChecksum == (int) message.charAt(2))
 			{
+				//valid checksum
 				isValid = true; 
 			}
 			else
 			{
+				//invalid checksum
 				isValid = false;
 			}
 			
 			return isValid;
 		}
 	
-
 	
-	public String convertToString(byte[] bytes)
-	{	String result = "";
-		for(byte b: bytes)
-		{
-			result += (char)b;
-		}
-		System.out.println("RESULT" + result);
-		return result;
-	}
-	
+	/**
+	 * Interprets message, and determines if the messages destination is my network
+	 * @param message the message being sent
+	 * @return
+	 */
 	public boolean determineIfMyNetwork(String message)
 	{
 		boolean result = false ;
+		
+		//char that holds destination data in message
 		char networkDest = message.charAt(4);
+		
+		//array to compare destination bit to
 		char[] array = {'q','r','s','t'};
 
+		
+		/**
+		 * If the destination bit matches any of the chars in the above array,
+		 * the destination network of the message is my network 
+		 */
 		for(int i = 0; i < array.length; i++)
 		{
 			if(networkDest == array[i])
@@ -238,15 +261,30 @@ Socket destinationSocket;
 		return result;
 	}
 	
+	
+	/**
+	 * Routes the message to the BGP, destination is not my network
+	 * @param message the message to be sent
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
 	public void routeToBGP(String message) throws UnknownHostException, IOException
 	{
+		//The message, excluding the source and destination bits
 		String payload = message.substring(2, 10);
+		
+		//Source my BGP, destination other BGP
 		String destination = "56" +payload;
+		
+		//Transforms destination into bytes
 		byte[] bytes = destination.getBytes();
 		
+		//Reads table and stores destinations (datholders) in list
 		ArrayList<DataHolder> destinationList = new TableReader().readTable("bgpout.txt");
 		String address = "";
 		
+		//Finds the appropriate destination by iterating through the list
+		//finding the correct address for sending from this router to the next stop
 		for(DataHolder dh: destinationList)
 		{
 			if(routerNumber == dh.source.charAt(0))
@@ -255,12 +293,10 @@ Socket destinationSocket;
 			}
 		}
 		
+		//Creates socket and writes the message
 		Socket destinationSocket = new Socket(address, 4566 );
 		destinationSocket.getOutputStream().write(bytes);
-		
 		destinationSocket.close();
-	
-		
 	}
 	
 	

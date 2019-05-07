@@ -160,7 +160,7 @@ public class ThreadSender implements Runnable
 		//Purposely corrupts the checksum if the message is flagged as sabotaged
 		if(sabotaged)
 		{
-		//	checkSumAsChar +=1;
+			checkSumAsChar +=1;
 		}
 		
 		System.out.println("Outgoing Destination: " + localDestination);

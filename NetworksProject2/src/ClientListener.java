@@ -12,10 +12,10 @@ public class ClientListener  implements Runnable
 	Socket socket;
 	ServerSocket serverSocket;
 	
-	public ClientListener(Socket listenSocket) throws IOException
+	public ClientListener(Socket incomingSocket) throws IOException
 	{	
 		//Socket which the message is received through
-		socket = listenSocket;
+		socket = incomingSocket;
 	}
 
 
@@ -25,27 +25,19 @@ public class ClientListener  implements Runnable
 		{	
 			//Scanner used to read the incoming message
 			Scanner scanner = new Scanner(socket.getInputStream());
+			//Reads input Stream of server
+			byte[] incoming = new byte[10];
+			incoming = this.socket.getInputStream().readAllBytes();
 			
-			//The delimiting character for the scanner
-			char delimiterChar = (char) 255;
+			//String that will hold the message, formed from the input stream of the socket
+			String message = new String(incoming);
 			
-			//The delimiter as a string
-			String stringDelimiter = new StringBuilder().append(delimiterChar).toString();
 			
-			//Setting the delimiter
-			scanner = scanner.useDelimiter(stringDelimiter);
-			
-			if(scanner.hasNext())
+			//Verify the checksum of the message
+			if(verifyCheckSum(message))
 			{
-				//Message that is received
-				String message = scanner.next();
-				
-				//Determines if the checksum is valid
-				//if(verifyCheckSum(message))
-				//{
-				//	System.out.println("Checksum Verified: Data Intact\n");
-				//	this.socket.close();
-				//}
+				System.out.println("Checksum Verified: Data Intact\n" + "Message Received\n" + message);
+				this.socket.close();
 			}
 			else
 			{
@@ -65,38 +57,36 @@ public class ClientListener  implements Runnable
 	 * @param incomingMessage the message that has been received
 	 * @return True(valid checksum) or False(invalid checksum)
 	 */
-	//public boolean verifyCheckSum(String incomingMessage)
-	//{
-//		//The source of the incoming message
-//		char source = incomingMessage.charAt(0);
-//		
-//		//The destination of the incoming message
-//		char destination = incomingMessage.charAt(1);
-//		
-//		//The checksum of the incoming message
-//		int checkSum = incomingMessage.charAt(2);
-//		
-//		//The binary string of the incoming data
-//		String data = incomingMessage.substring(3, 10);
-//		
-//		//The binary string in decimal form
-//		int actualSum = Integer.parseInt(data, 2);
-//		
-//		System.out.println("Incoming Source: "+ source);
-//		System.out.println("Incoming Destination: " + destination);
-//		System.out.println("Incoming Checksum: " + checkSum);		
-//		System.out.println("Incoming Data: " + data);
-//		
-//		if(checkSum == actualSum)
-//		{	
-//			//valid checksum
-//			return true;
-//		}
-//		else
-//		{
-//			//invalid checksum
-//			return false;
-//		}
+	public boolean verifyCheckSum(String message)
+	{
+		boolean isValid;
+		int finalChecksum = 0 ;
+		String payload = message.substring(3, 10);
+		
+		
+		for(int i = 0; i < payload.length(); i++)
+		{	
+			finalChecksum += payload.charAt(i);
+			
+			if(finalChecksum > 255)
+			{
+				finalChecksum = payload.charAt(i);
+			}
+		}
+			
+			if (finalChecksum == (int) message.charAt(2))
+			{
+				//valid checksum
+				isValid = true; 
+			}
+			else
+			{
+				//invalid checksum
+				isValid = false;
+			}
+			
+			return isValid;
+		}
 	}	
 //}
 

@@ -1,6 +1,10 @@
 import java.io.IOException;
 import java.net.ServerSocket;
-
+/**
+ * @author Christopher Roadcap
+ * A client that sends outgoing messages, as well as receives incoming messages.
+ * received messages are verified to ensure valid data via a checksum
+ */
 public class Client3 
 {
 
@@ -12,9 +16,8 @@ public class Client3
 	 */
     public  void setupClient() throws IOException, InterruptedException
     {	
+    	//Socket thats listens for incoming messages
     	ServerSocket serverSocket = new ServerSocket(7771);
-		//Socket thats listens for incoming messages
-    	///ServerSocket serverSocket = new ServerSocket(7771);
     	
     	//Thread that sends messages
 		Thread sender = new Thread(new ThreadSender('3',4447)); //ensure ports are correct

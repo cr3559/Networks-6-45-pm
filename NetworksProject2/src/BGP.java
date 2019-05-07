@@ -7,7 +7,7 @@ public class BGP
 		ServerSocket serverSocket;
 		
 		/**
-		 * Creates a server socket to listen for incoming messages. When a message is received,
+		 * Creates a BGP server socket to listen for incoming messages. When a message is received,
 		 * A thread is made to determine where the message should be sent next, and then sends the message
 		 * @throws InterruptedException
 		 */

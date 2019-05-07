@@ -1,6 +1,13 @@
 import java.io.IOException;
 import java.net.ServerSocket;
-
+/**
+ * @author Christopher Roadcap
+ * 
+ * A router that receives incoming messages and determines, 
+ * where to send them based on the message contents and by 
+ * referencing a routing table. Verifies the message has not been 
+ * corrupted via a checksum.
+ */
 public class Router4 
 {
 	//Socket for receiving incoming messages
@@ -15,7 +22,7 @@ public class Router4
 	    {    	  
 	        try
 	        {	//Listening for incoming messages on port 4446
-	            serverSocket = new ServerSocket(4566); 	
+	            serverSocket = new ServerSocket(4466); 	
 	        }
 	        //I/O error or interrupt
 	        catch (IOException e)
